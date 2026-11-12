@@ -6,21 +6,32 @@ Open a local setup website, sign in with a company administrator account, and ch
 
 ## Start
 
-Requires Docker Compose and SMB 3 encryption support on the NAS. Build the image for your machine (Intel/AMD or ARM):
+Pull the public image. No GitHub login is required. The image is built for Intel/AMD and ARM.
 
 ```sh
-docker compose up -d --build
+docker pull ghcr.io/kaff-international-limited/visiondoc-smb:latest
+
+docker run -d --name visiondoc-smb \
+  --restart unless-stopped \
+  -p 127.0.0.1:8787:8080 \
+  -v visiondoc-smb:/data \
+  --read-only \
+  --tmpfs /tmp:size=64m,mode=1777 \
+  --cap-drop ALL \
+  --security-opt no-new-privileges:true \
+  --memory 512m \
+  ghcr.io/kaff-international-limited/visiondoc-smb:latest
 ```
 
 Open **http://localhost:8787**. Sign in with a company administrator account for https://app.visiondoc.ai. Choose a protocol and enter the folder, username and password. SMB uses `\\server\share\folder`. SFTP, FTPS and WebDAV use `sftp://`, `ftps://` and `https://` addresses. **Test connection and save**, then **Start import**. Refresh the page to see progress.
 
-The image is `visiondoc-smb:prod`. It talks only to https://app.visiondoc.ai. Use `UI_PORT=8788` when 8787 is already in use. This image does not deploy the cloud application; that server must already allow pairing.
+The image talks only to https://app.visiondoc.ai. If port 8787 is taken, change the first port number, for example `-p 127.0.0.1:8788:8080`. This image does not deploy the cloud application; that server must already allow pairing.
 
 ## Restart and credentials
 
-`docker compose restart` or a machine restart retains the encrypted settings, agent token and SHA-256 ledger in the named `state` volume. Docker must start automatically on that machine. Import resumes without entering account credentials again. Browser sign-in lasts up to 30 days. Signing out hides this screen and does not stop import. Pause stops the scan.
+`docker restart visiondoc-smb` or a machine restart retains the encrypted settings, agent token and SHA-256 ledger in the `visiondoc-smb` volume. Docker must start automatically on that machine. Import resumes without entering account credentials again. Browser sign-in lasts up to 30 days. Signing out hides this screen and does not stop import. Pause stops the scan.
 
-The company password is used only for cloud sign-in and is not saved. The server issues a revocable, tenant-bound agent token. Folder credentials must be retained to reconnect: they are encrypted on disk, with the encryption key in the same protected volume. An SFTP server key is pinned on the first successful save and later scans reject a different key. Someone who controls the host/volume can decrypt them. Back up the complete volume; do not run `docker compose down -v` unless intentionally resetting the appliance. A volume refuses to open when it was created for a different VisionDoc address.
+The company password is used only for cloud sign-in and is not saved. The server issues a revocable, tenant-bound agent token. Folder credentials must be retained to reconnect: they are encrypted on disk, with the encryption key in the same protected volume. An SFTP server key is pinned on the first successful save and later scans reject a different key. Someone who controls the host/volume can decrypt them. Back up the complete volume; do not remove the `visiondoc-smb` volume unless intentionally resetting the appliance. A volume refuses to open when it was created for a different VisionDoc address.
 
 The UI binds to localhost by default. For remote management use a secured HTTPS reverse proxy, set `UI_HOSTS` to the exact hostname, and configure secure cookies before exposing the UI. Do not expose the setup port directly to the internet.
 
