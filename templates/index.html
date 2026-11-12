@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en" data-brand="visiondoc" data-theme="light">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VisionDoc · Folder import</title>
+<style>
+html[data-brand="visiondoc"]{
+  --vd-ink:#10201c;--vd-ink-2:#4a5f59;--vd-ink-3:#85968f;
+  --card:#ffffff;--card-foreground:#10201c;--background:#ffffff;
+  --vd-line:rgba(15,40,35,.08);--vd-line-2:rgba(15,40,35,.13);
+  --vd-sunk:rgba(15,40,35,.04);--vd-accent:#0b5f50;--vd-on-accent:#ffffff;
+  --vd-accent-wash:rgba(14,122,103,.11);
+  --vd-hold:#d8455f;--vd-hold-w:rgba(216,69,95,.12);
+  --st-ok:#0b5f50;--st-ok-w:rgba(14,122,103,.11);
+  --st-wait:#8a5a00;--st-wait-w:rgba(226,146,31,.14);
+  --st-bad:#b42318;--st-bad-w:rgba(216,69,95,.12);
+  --st-skip:#10201c;--st-skip-w:rgba(15,40,35,.06);
+  --st-dot-done:#0e7a67;--st-dot-now:#e2921f;
+  --vd-amb-1:#7fe3d0;--vd-amb-2:#2fa8c9;--vd-amb-3:#b98ce0;--vd-amb-4:#e8f6f2;--vd-amb-base:#cfede6;
+  --vd-shadow-win:0 30px 80px rgba(8,40,34,.26),0 4px 16px rgba(8,40,34,.09);
+  color-scheme:light;
+}
+html[data-brand="visiondoc"] body{margin:0;background:var(--vd-amb-base);color:var(--vd-ink);font:15px/1.45 system-ui,sans-serif}
+html[data-brand="visiondoc"] .vd-ambient{position:fixed;inset:-18%;z-index:0;pointer-events:none;background:radial-gradient(46% 38% at 14% 18%,var(--vd-amb-1) 0%,transparent 62%),radial-gradient(40% 44% at 82% 12%,var(--vd-amb-2) 0%,transparent 60%),radial-gradient(52% 46% at 74% 84%,var(--vd-amb-3) 0%,transparent 62%),radial-gradient(44% 40% at 22% 88%,var(--vd-amb-1) 0%,transparent 58%),radial-gradient(70% 60% at 50% 50%,var(--vd-amb-4) 0%,transparent 70%),var(--vd-amb-base);filter:blur(48px) saturate(118%)}
+html[data-brand="visiondoc"] .vd-shell{position:relative;z-index:1;min-height:100vh;box-sizing:border-box;display:flex;justify-content:center;align-items:flex-start;padding:16px}
+html[data-brand="visiondoc"] .vd-shell:has(.is-login){align-items:center}
+html[data-brand="visiondoc"] .vd-window{width:min(880px,100%);min-width:0;border-radius:22px;background:var(--card);color:var(--card-foreground);box-shadow:var(--vd-shadow-win)}
+html[data-brand="visiondoc"] .vd-window.is-login{width:min(440px,100%)}
+html[data-brand="visiondoc"] .vd-body{padding:20px 28px 32px}
+html[data-brand="visiondoc"] .top{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px 16px;margin-bottom:16px}
+html[data-brand="visiondoc"] .brand{display:flex;align-items:center;gap:12px;min-width:0}
+html[data-brand="visiondoc"] .tile{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:8px;background:#084050}html[data-brand="visiondoc"] .tile img{width:26px;height:26px;display:block}
+html[data-brand="visiondoc"] .mark{color:var(--vd-ink-2);font-size:12px;font-weight:700}
+html[data-brand="visiondoc"] h1{margin:0;font-size:22px;line-height:1.2;letter-spacing:-.02em;color:var(--card-foreground)}
+html[data-brand="visiondoc"] h2{margin:0 0 12px;font-size:14px;line-height:1.3;color:var(--card-foreground)}
+html[data-brand="visiondoc"] .lede{margin:8px 0 0;color:var(--vd-ink-2)}
+html[data-brand="visiondoc"] .card{background:var(--card);color:var(--card-foreground);border:1px solid var(--vd-line-2);border-radius:14px;padding:14px 16px}
+html[data-brand="visiondoc"] .stack{display:flex;flex-direction:column;gap:16px}
+html[data-brand="visiondoc"] label,html[data-brand="visiondoc"] legend{display:block;margin:12px 0 8px;padding:0;font-weight:700;color:var(--card-foreground)}
+html[data-brand="visiondoc"] fieldset{margin:0;padding:0;border:0;min-width:0}
+html[data-brand="visiondoc"] input{box-sizing:border-box;display:block;width:100%;padding:10px 12px;border:1px solid var(--vd-line-2);border-radius:10px;font:inherit;background:var(--card);color:var(--card-foreground)}
+html[data-brand="visiondoc"] input::placeholder{color:var(--vd-ink-3)}
+html[data-brand="visiondoc"] button{padding:8px 16px;background:var(--vd-accent);border:0;border-radius:999px;color:var(--vd-on-accent);font:inherit;font-weight:700;cursor:pointer}
+html[data-brand="visiondoc"] button.ghost{background:transparent;color:var(--card-foreground);border:1px solid var(--vd-line-2)}
+html[data-brand="visiondoc"] button.ghost:hover{background:var(--vd-accent-wash);border-color:var(--vd-accent);color:var(--vd-accent)}
+html[data-brand="visiondoc"] button:disabled{opacity:.55;cursor:not-allowed}
+html[data-brand="visiondoc"] .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:16px}
+html[data-brand="visiondoc"] .session{margin:0;flex:none}
+html[data-brand="visiondoc"] .session button{margin:0}
+html[data-brand="visiondoc"] .out-note{grid-column:1 / -1;margin:0;color:var(--vd-ink-2)}
+html[data-brand="visiondoc"] .badge{border:1px solid var(--vd-line-2);border-radius:999px;padding:3px 9px;color:var(--vd-ink-2);font-size:12px;font-weight:700}
+html[data-brand="visiondoc"] .err{margin:0 0 16px;padding:12px 14px;border-radius:12px;background:var(--vd-hold-w);color:var(--vd-hold);font-weight:700}
+html[data-brand="visiondoc"] .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 16px;padding:0;list-style:none}
+html[data-brand="visiondoc"] .steps li{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px solid var(--vd-line);border-radius:12px;background:var(--vd-sunk);color:var(--card-foreground)}
+html[data-brand="visiondoc"] .steps .n{width:24px;height:24px;flex:none;display:grid;place-items:center;border-radius:999px;border:1px solid var(--vd-line-2);font-size:12px;font-weight:700;color:var(--vd-ink-2)}
+html[data-brand="visiondoc"] .steps .is-done .n,html[data-brand="visiondoc"] .steps .is-live .n{background:var(--st-dot-done);border-color:var(--st-dot-done);color:var(--vd-on-accent)}
+html[data-brand="visiondoc"] .steps .is-now .n{background:var(--st-dot-now);border-color:var(--st-dot-now);color:#10201c}
+html[data-brand="visiondoc"] .steps b{display:block;font-size:14px}
+html[data-brand="visiondoc"] .steps span,html[data-brand="visiondoc"] .steps small{display:block;color:var(--vd-ink-2);overflow-wrap:anywhere}
+html[data-brand="visiondoc"] .protos{display:flex;flex-wrap:wrap;gap:8px}
+html[data-brand="visiondoc"] .protos label{display:flex;align-items:center;gap:8px;margin:0;padding:8px 12px;border:1px solid var(--vd-line-2);border-radius:999px;font-weight:700;cursor:pointer}
+html[data-brand="visiondoc"] .protos label:has(input:checked){background:var(--vd-accent-wash);border-color:var(--vd-accent);color:var(--vd-accent)}
+html[data-brand="visiondoc"] .protos input{width:auto;margin:0;accent-color:var(--vd-accent)}
+html[data-brand="visiondoc"] .hint{display:none;margin:8px 0 0;color:var(--vd-ink-2)}
+html[data-brand="visiondoc"] .source:has(input[value="smb"]:checked) .hint[data-proto="smb"],
+html[data-brand="visiondoc"] .source:has(input[value="sftp"]:checked) .hint[data-proto="sftp"],
+html[data-brand="visiondoc"] .source:has(input[value="ftps"]:checked) .hint[data-proto="ftps"],
+html[data-brand="visiondoc"] .source:has(input[value="webdav"]:checked) .hint[data-proto="webdav"]{display:block}
+html[data-brand="visiondoc"] .note{margin:8px 0 0;color:var(--vd-ink-2)}
+html[data-brand="visiondoc"] .vd-status{display:inline-flex;align-items:center;gap:8px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;line-height:1.4}
+html[data-brand="visiondoc"] .vd-status i{width:7px;height:7px;border-radius:999px;background:currentColor}
+html[data-brand="visiondoc"] .vd-status.is-completed{color:var(--st-ok);background:var(--st-ok-w)}
+html[data-brand="visiondoc"] .vd-status.is-pending{color:var(--st-wait);background:var(--st-wait-w)}
+html[data-brand="visiondoc"] .vd-status.is-rejected{color:var(--st-bad);background:var(--st-bad-w)}
+html[data-brand="visiondoc"] .vd-status.is-skipped{color:var(--st-skip);background:var(--st-skip-w)}
+html[data-brand="visiondoc"] .status-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+html[data-brand="visiondoc"] .hold{margin:8px 0 0;color:var(--vd-hold);font-weight:700}
+html[data-brand="visiondoc"] .quiet{margin:8px 0 0;color:var(--vd-ink-2)}
+html[data-brand="visiondoc"] .files{list-style:none;margin:12px 0 0;padding:0}
+html[data-brand="visiondoc"] .files li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--vd-line)}
+html[data-brand="visiondoc"] .files b{display:block;overflow-wrap:anywhere}
+html[data-brand="visiondoc"] .meta{display:block;margin-top:8px;color:var(--vd-ink-3);font-size:12px;overflow-wrap:anywhere}
+html[data-brand="visiondoc"] .file-state{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none;max-width:280px}
+html[data-brand="visiondoc"] .file-state small{color:var(--vd-ink-2);text-align:right}
+html[data-brand="visiondoc"] .file-state small.bad{color:var(--vd-hold);font-weight:700}
+html[data-brand="visiondoc"] summary{display:flex;justify-content:space-between;gap:12px;align-items:baseline;cursor:pointer;font-weight:700;list-style:none}
+html[data-brand="visiondoc"] summary::-webkit-details-marker{display:none}
+html[data-brand="visiondoc"] summary span{min-width:0}
+html[data-brand="visiondoc"] summary small{display:block;font-weight:400;color:var(--vd-ink-2);overflow-wrap:anywhere}
+html[data-brand="visiondoc"] summary::after{content:"Edit";color:var(--vd-accent);flex:none}
+html[data-brand="visiondoc"] details[open] summary::after{content:"Close"}
+html[data-brand="visiondoc"] details form{margin-top:4px}
+@media (max-width:720px){
+  html[data-brand="visiondoc"] .vd-shell{padding:10px}
+  html[data-brand="visiondoc"] .steps{grid-template-columns:1fr}
+  html[data-brand="visiondoc"] .files li{flex-direction:column}
+  html[data-brand="visiondoc"] .file-state{align-items:flex-start;max-width:none}
+  html[data-brand="visiondoc"] .file-state small{text-align:left}
+}
+</style>
+{% macro pill(status) -%}
+{%- set kinds = {'uploaded':'completed','unchanged':'skipped','duplicate':'skipped','waiting':'pending','error':'rejected'} -%}
+{%- set labels = {'uploaded':'Imported','unchanged':'Unchanged','duplicate':'Skipped','waiting':'Waiting','error':'Failed'} -%}
+<span class="vd-status is-{{ kinds.get(status, 'pending') }}"><i></i>{{ labels.get(status, status) }}</span>
+{%- endmacro %}
+{% macro folder_form() -%}
+<form method="post" action="/share">
+<input type="hidden" name="csrf" value="{{ csrf }}">
+<fieldset>
+<legend>Protocol</legend>
+<div class="protos">
+<label><input type="radio" name="protocol" value="smb" {% if (cfg.protocol or 'smb') == 'smb' %}checked{% endif %}>SMB</label>
+<label><input type="radio" name="protocol" value="sftp" {% if cfg.protocol == 'sftp' %}checked{% endif %}>SFTP</label>
+<label><input type="radio" name="protocol" value="ftps" {% if cfg.protocol == 'ftps' %}checked{% endif %}>FTPS</label>
+<label><input type="radio" name="protocol" value="webdav" {% if cfg.protocol == 'webdav' %}checked{% endif %}>WebDAV</label>
+</div>
+</fieldset>
+<label for="share">Folder path</label>
+<input id="share" name="share" value="{{ cfg.share or '' }}" autocomplete="off" required>
+<p class="hint" data-proto="smb">UNC path, for example \\server\share\folder.</p>
+<p class="hint" data-proto="sftp">SFTP address, for example sftp://files.example/inbox.</p>
+<p class="hint" data-proto="ftps">FTPS address, for example ftps://files.example/inbox.</p>
+<p class="hint" data-proto="webdav">HTTPS WebDAV address, for example https://files.example/inbox.</p>
+<label for="smb_user">Username</label>
+<input id="smb_user" name="smb_user" value="{{ cfg.smb_user or '' }}" autocomplete="off" required>
+<p class="note">For SMB you can use DOMAIN\username. A read-only account is enough.</p>
+<label for="smb_password">Password</label>
+<input id="smb_password" name="smb_password" type="password" autocomplete="off" required>
+<p class="note">Every subfolder is included. SMB, SFTP, FTPS and WebDAV stay encrypted. Files larger than 64 MB stay in the folder and are not uploaded.</p>
+<div class="actions"><button {% if state.running %}disabled{% endif %}>Test connection and save</button></div>
+</form>
+{%- endmacro %}
+<div class="vd-ambient"></div>
+<div class="vd-shell">
+<div class="vd-window{% if not session.get('authenticated') %} is-login{% endif %}">
+<div class="vd-body">
+<header class="top">
+<div class="brand">
+<span class="tile"><img src="{{ url_for('static', filename='brand/monogram-white-64.png') }}" width="26" height="26" alt="VisionDoc"></span>
+<div><div class="mark">VisionDoc</div><h1>Folder import</h1></div>
+</div>
+{% if session.get('authenticated') %}
+<form class="session" method="post" action="/logout"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="ghost">Sign out</button></form>
+<p class="out-note">Hides this screen only. Import keeps running.</p>
+{% elif environment != 'prod' %}
+<span class="badge">{{ environment|upper }}</span>
+{% endif %}
+</header>
+{% if environment != 'prod' and session.get('authenticated') %}<p class="badge">{{ environment|upper }}</p>{% endif %}
+{% if error %}<div class="err">{{ error }}</div>{% endif %}
+{% if not session.get('authenticated') %}
+<h2>Sign in</h2>
+<section class="card">
+<p class="quiet">Use the administrator account for your company. The password is checked once and is not saved on this computer.</p>
+<form method="post" action="/login">
+<input type="hidden" name="csrf" value="{{ csrf }}">
+<label for="email">Email</label>
+<input id="email" name="email" type="email" autocomplete="username" required>
+<label for="password">Password</label>
+<input id="password" name="password" type="password" autocomplete="current-password" required>
+<div class="actions"><button>Sign in</button></div>
+</form>
+</section>
+{% else %}
+<p class="lede">Choose a folder. VisionDoc copies the documents into your company workspace and leaves the originals in place.</p>
+<ol class="steps">
+<li class="is-done"><span class="n" aria-hidden="true">1</span><div><b>Company</b><span>{{ cfg.email }}</span><span>{{ count }} imported</span></div></li>
+<li class="{{ 'is-done' if cfg.share else 'is-now' }}"><span class="n" aria-hidden="true">2</span><div><b>Folder</b>{% if cfg.share %}<span>{{ (cfg.protocol or 'smb')|upper }}</span><small>{{ cfg.share }}</small>{% else %}<span>Choose where to read</span>{% endif %}</div></li>
+<li class="{{ 'is-live' if state.running else ('is-now' if cfg.share else 'is-wait') }}"><span class="n" aria-hidden="true">3</span><div><b>Import</b>{% if state.running %}<span>Importing</span>{% elif cfg.share %}<span>Ready to start</span>{% else %}<span>Starts after the folder is saved</span>{% endif %}</div></li>
+</ol>
+<div class="stack">
+{% if not cfg.share %}
+<div>
+<h2>Choose the folder</h2>
+<section class="card source">{{ folder_form() }}</section>
+</div>
+{% else %}
+<div>
+<h2>Import</h2>
+<section class="card">
+<div class="status-row">
+{% if state.running %}<span class="vd-status is-completed"><i></i>Importing</span>{% elif state.last_scan %}<span class="vd-status is-pending"><i></i>Paused</span>{% else %}<span class="vd-status is-completed"><i></i>Ready</span>{% endif %}
+</div>
+{% if state.message and state.message != 'Connect your company account to begin.' %}
+<p class="{{ 'hold' if ('unavailable' in state.message or 'not authorised' in state.message or 'key changed' in state.message) else 'quiet' }}">{{ state.message }}</p>
+{% endif %}
+{% if state.last_scan %}<p class="quiet">Last scan {{ state.last_scan }}</p>{% endif %}
+<form method="post" action="/run">
+<input type="hidden" name="csrf" value="{{ csrf }}">
+<div class="actions">
+<button name="action" value="start">{% if state.running or state.last_scan %}Scan again{% else %}Start import{% endif %}</button>
+<button class="ghost" name="action" value="pause">Pause</button>
+</div>
+</form>
+<p class="quiet">Pause stops the scan. Sign out only hides this screen.</p>
+{% if files %}
+<ul class="files">
+{% for file in files %}
+<li>
+<div><b>{{ file.path }}</b><span class="meta">{{ file.bytes }} bytes{% if file.job_id %} · {{ file.job_id }}{% endif %}</span></div>
+<div class="file-state">{{ pill(file.status) }}{% if file.message %}<small class="{{ 'bad' if file.status == 'error' else '' }}">{{ file.message }}</small>{% endif %}</div>
+</li>
+{% endfor %}
+</ul>
+<p class="quiet">Identical content is skipped, including renamed files. A changed file is imported as a new document. Refresh this page to update the list.</p>
+{% else %}
+<p class="quiet">No files scanned yet. Start the import, then refresh this page.</p>
+{% endif %}
+</section>
+</div>
+<details class="card source">
+<summary><span><b>Folder</b><small>{{ (cfg.protocol or 'smb')|upper }} · {{ cfg.share }}</small></span></summary>
+{{ folder_form() }}
+</details>
+{% endif %}
+</div>
+{% endif %}
+</div>
+</div>
+</div>
+</html>

@@ -1,0 +1,21 @@
+name: visiondoc-smb-${ENVIRONMENT:-dev}
+services:
+  importer:
+    image: visiondoc-smb:${ENVIRONMENT:-dev}${IMAGE_SUFFIX:-}
+    build:
+      context: .
+      args:
+        ENVIRONMENT: ${ENVIRONMENT:-dev}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${UI_PORT:-8787}:8080"
+    volumes:
+      - state:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+volumes:
+  state:
