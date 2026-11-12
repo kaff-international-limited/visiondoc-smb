@@ -124,12 +124,12 @@ class ApplianceTests(unittest.TestCase):
         self.assertNotIn('#e9f2ef', body)
         self.assertNotIn('#1e2a27', body)
         self.assertNotIn('Connect your company account to begin.', body)
-        self.assertNotIn('>PROD<', body)
+        self.assertEqual(self.a.API, 'https://app.visiondoc.ai/api')
         from flask import session
         with self.a.app.test_request_context('/'):
             session['authenticated'] = True
             saved = self.a.render_template(
-                'index.html', environment='prod',
+                'index.html',
                 cfg={'email': 'admin@example.test', 'protocol': 'sftp', 'share': 'sftp://files.example/inbox'},
                 files=[{'path': 'inbox/a.txt', 'bytes': 4, 'status': 'error', 'job_id': '', 'message': 'File exceeds the 64 MB upload limit and was not uploaded.'}],
                 count=0, state={'running': False, 'message': 'Folder connected. Start importing when ready.', 'last_scan': None},

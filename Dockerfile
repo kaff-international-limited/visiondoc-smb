@@ -6,8 +6,6 @@ RUN pip install --no-cache-dir -r requirements.txt && useradd --uid 10001 --crea
 COPY app.py .
 COPY templates templates
 COPY static static
-ARG ENVIRONMENT=dev
-ENV ENVIRONMENT=${ENVIRONMENT}
 USER 10001:10001
 VOLUME ["/data"]
 EXPOSE 8080

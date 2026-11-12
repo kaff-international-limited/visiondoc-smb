@@ -7,7 +7,7 @@ import uuid
 
 root = Path(__file__).resolve().parent
 prefix = 'smb-test-' + uuid.uuid4().hex[:10]
-image = os.environ.get('APPLIANCE_TEST_IMAGE', 'visiondoc-smb:dev-arm64')
+image = os.environ.get('APPLIANCE_TEST_IMAGE', 'visiondoc-smb:prod-arm64')
 env = dict(os.environ, FIXTURE_PASSWORD=secrets.token_urlsafe(24))
 
 def run(*args, **kwargs):

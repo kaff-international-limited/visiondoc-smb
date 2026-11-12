@@ -24,11 +24,7 @@ from cryptography.fernet import Fernet
 from flask import Flask, abort, redirect, render_template, request, session
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
-ENVIRONMENT = os.environ.get("ENVIRONMENT", "dev")
-PREFIXES = {"dev": "app.dev", "staging": "app.stg", "prod": "app"}
-if ENVIRONMENT not in PREFIXES:
-    raise RuntimeError("Choose dev, staging, or prod")
-API = f"https://{PREFIXES[ENVIRONMENT]}.visiondoc.ai/api"
+API = "https://app.visiondoc.ai/api"
 DATA = Path(os.environ.get("APPLIANCE_DATA", "/data"))
 DATA.mkdir(parents=True, exist_ok=True, mode=0o700)
 os.umask(0o077)
@@ -71,7 +67,7 @@ def config():
             return {}
         value = json.loads(FERNET.decrypt(CONFIG.read_bytes()))
         if value.get("target") != API:
-            raise RuntimeError("This volume belongs to another environment. Use a separate volume.")
+            raise RuntimeError("This volume was created for a different VisionDoc address. Use a separate volume.")
         return value
 
 
@@ -131,7 +127,7 @@ def index():
     with connect() as c:
         files = [dict(row) for row in c.execute("SELECT * FROM files ORDER BY updated DESC LIMIT 200")] if cfg else []
         count = c.execute("SELECT COUNT(*) FROM sent").fetchone()[0] if cfg else 0
-    return render_template("index.html", environment=ENVIRONMENT, cfg=cfg,
+    return render_template("index.html", cfg=cfg,
                            files=files, count=count, state=STATE.copy(), csrf=session["csrf"],
                            error=session.pop("error", None))
 

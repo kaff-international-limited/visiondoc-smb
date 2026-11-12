@@ -1,11 +1,9 @@
-name: visiondoc-smb-${ENVIRONMENT:-dev}
+name: visiondoc-smb-prod
 services:
   importer:
-    image: visiondoc-smb:${ENVIRONMENT:-dev}${IMAGE_SUFFIX:-}
+    image: visiondoc-smb:prod${IMAGE_SUFFIX:-}
     build:
       context: .
-      args:
-        ENVIRONMENT: ${ENVIRONMENT:-dev}
     restart: unless-stopped
     ports:
       - "127.0.0.1:${UI_PORT:-8787}:8080"

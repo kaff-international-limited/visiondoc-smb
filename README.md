@@ -9,26 +9,18 @@ Open a local setup website, sign in with a company administrator account, and ch
 Requires Docker Compose and SMB 3 encryption support on the NAS. Build the image for your machine (Intel/AMD or ARM):
 
 ```sh
-ENVIRONMENT=prod docker compose up -d --build
+docker compose up -d --build
 ```
 
-Open **http://localhost:8787**. Sign in with the account for the selected environment. Choose a protocol and enter the folder, username and password. SMB uses `\\server\share\folder`. SFTP, FTPS and WebDAV use `sftp://`, `ftps://` and `https://` addresses. **Test connection and save**, then **Start import**. Refresh the page to see progress.
+Open **http://localhost:8787**. Sign in with a company administrator account for https://app.visiondoc.ai. Choose a protocol and enter the folder, username and password. SMB uses `\\server\share\folder`. SFTP, FTPS and WebDAV use `sftp://`, `ftps://` and `https://` addresses. **Test connection and save**, then **Start import**. Refresh the page to see progress.
 
-Supported combinations:
-
-| Environment | Cloud endpoint | Image |
-|---|---|---|
-| dev | https://app.dev.visiondoc.ai | `visiondoc-smb:dev` |
-| staging | https://app.stg.visiondoc.ai | `visiondoc-smb:staging` |
-| prod | https://app.visiondoc.ai | `visiondoc-smb:prod` |
-
-Use `UI_PORT=8788` when running a second appliance. Each environment has a separate Compose project and named volume. Images for staging and prod do not deploy the cloud application; its server must separately support the pairing API.
+The image is `visiondoc-smb:prod`. It talks only to https://app.visiondoc.ai. Use `UI_PORT=8788` when 8787 is already in use. This image does not deploy the cloud application; that server must already allow pairing.
 
 ## Restart and credentials
 
 `docker compose restart` or a machine restart retains the encrypted settings, agent token and SHA-256 ledger in the named `state` volume. Docker must start automatically on that machine. Import resumes without entering account credentials again. Browser sign-in lasts up to 30 days. Signing out hides this screen and does not stop import. Pause stops the scan.
 
-The company password is used only for cloud sign-in and is not saved. The server issues a revocable, tenant-bound agent token. Folder credentials must be retained to reconnect: they are encrypted on disk, with the encryption key in the same protected volume. An SFTP server key is pinned on the first successful save and later scans reject a different key. Someone who controls the host/volume can decrypt them. Back up the complete volume; do not run `docker compose down -v` unless intentionally resetting the appliance. A volume refuses to open against a different environment.
+The company password is used only for cloud sign-in and is not saved. The server issues a revocable, tenant-bound agent token. Folder credentials must be retained to reconnect: they are encrypted on disk, with the encryption key in the same protected volume. An SFTP server key is pinned on the first successful save and later scans reject a different key. Someone who controls the host/volume can decrypt them. Back up the complete volume; do not run `docker compose down -v` unless intentionally resetting the appliance. A volume refuses to open when it was created for a different VisionDoc address.
 
 The UI binds to localhost by default. For remote management use a secured HTTPS reverse proxy, set `UI_HOSTS` to the exact hostname, and configure secure cookies before exposing the UI. Do not expose the setup port directly to the internet.
 
@@ -53,7 +45,7 @@ No tenants are enabled by this package. The owner's requested enable-only scope 
 ```sh
 python -m unittest discover -s tests -v
 # Optional disposable Samba fixture (Docker required):
-APPLIANCE_TEST_IMAGE=visiondoc-smb:dev-arm64 python tests/samba/run.py
+APPLIANCE_TEST_IMAGE=visiondoc-smb:prod-arm64 python tests/samba/run.py
 ```
 
 The backend tests separately cover disabled tenants, admin-only pairing, token revocation, tenant isolation, duplicate retry/rename, same-name safety, interrupted jobs and concurrent requests. A Samba fixture test verifies real SMB 3 encrypted recursive reads and a new container resuming the same volume without uploading existing content again. Its cloud response is stubbed; backend request tests exercise the actual API router.
