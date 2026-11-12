@@ -1,9 +1,9 @@
 name: visiondoc-smb-prod
 services:
   importer:
-    image: visiondoc-smb:prod${IMAGE_SUFFIX:-}
-    build:
-      context: .
+    image: ghcr.io/kaff-international-limited/visiondoc-smb:latest
+    container_name: visiondoc-smb
+    pull_policy: always
     restart: unless-stopped
     ports:
       - "127.0.0.1:${UI_PORT:-8787}:8080"
@@ -17,3 +17,4 @@ services:
     mem_limit: 512m
 volumes:
   state:
+    name: visiondoc-smb

@@ -6,26 +6,17 @@ Open a local setup website, sign in with a company administrator account, and ch
 
 ## Start
 
-Pull the public image. No GitHub login is required. The image is built for Intel/AMD and ARM.
+Clone this repository and start Compose. Compose pulls `ghcr.io/kaff-international-limited/visiondoc-smb:latest` from the public registry. It does not build the Dockerfile on this computer. No GitHub login is required. The image is built for Intel/AMD and ARM.
 
 ```sh
-docker pull ghcr.io/kaff-international-limited/visiondoc-smb:latest
-
-docker run -d --name visiondoc-smb \
-  --restart unless-stopped \
-  -p 127.0.0.1:8787:8080 \
-  -v visiondoc-smb:/data \
-  --read-only \
-  --tmpfs /tmp:size=64m,mode=1777 \
-  --cap-drop ALL \
-  --security-opt no-new-privileges:true \
-  --memory 512m \
-  ghcr.io/kaff-international-limited/visiondoc-smb:latest
+git clone https://github.com/kaff-international-limited/visiondoc-smb.git
+cd visiondoc-smb
+docker compose up -d --build
 ```
 
 Open **http://localhost:8787**. Sign in with a company administrator account for https://app.visiondoc.ai. Choose a protocol and enter the folder, username and password. SMB uses `\\server\share\folder`. SFTP, FTPS and WebDAV use `sftp://`, `ftps://` and `https://` addresses. **Test connection and save**, then **Start import**. Refresh the page to see progress.
 
-The image talks only to https://app.visiondoc.ai. If port 8787 is taken, change the first port number, for example `-p 127.0.0.1:8788:8080`. This image does not deploy the cloud application; that server must already allow pairing.
+The image talks only to https://app.visiondoc.ai. If port 8787 is taken, start with `UI_PORT=8788 docker compose up -d --build` and open **http://localhost:8788**. This image does not deploy the cloud application; that server must already allow pairing.
 
 ## Restart and credentials
 
